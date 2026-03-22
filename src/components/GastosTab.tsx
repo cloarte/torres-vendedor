@@ -199,7 +199,7 @@ const GastosTab = () => {
           <h2 className="text-sm font-semibold text-foreground">Gastos en borrador</h2>
           {borradores.length > 0 && (
             <button
-              onClick={() => toast.info('Enviar a aprobación — próximamente')}
+              onClick={() => setShowEnviarLote(true)}
               className="text-xs font-semibold text-primary active:scale-95 transition-transform"
             >
               Enviar a aprobación →
