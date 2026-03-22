@@ -250,6 +250,7 @@ const GastosTab = () => {
                   <div className="flex items-center gap-2 mt-1">
                     <span className="text-xs text-muted-foreground">{gasto.fecha}</span>
                     {gasto.hasPhoto && <Camera className="w-3.5 h-3.5 text-muted-foreground" />}
+                    {gasto.syncPending && <CloudOff className="w-3.5 h-3.5 text-muted-foreground" />}
                   </div>
                 </div>
               </div>
