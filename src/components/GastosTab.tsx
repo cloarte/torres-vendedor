@@ -266,8 +266,14 @@ const GastosTab = () => {
       </div>
 
       <FloatingActionButton
-        onClick={() => toast.info('Nuevo gasto — próximamente')}
+        onClick={() => setShowNuevoGasto(true)}
         label="Nuevo Gasto"
+      />
+
+      <NuevoGastoSheet
+        open={showNuevoGasto}
+        onOpenChange={setShowNuevoGasto}
+        onSave={handleAddGasto}
       />
 
       {/* Gasto Detail Sheet */}
