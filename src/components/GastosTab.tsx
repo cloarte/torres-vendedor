@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Camera, ChevronRight, AlertTriangle, Fuel, CircleDollarSign, UtensilsCrossed, Trash2 } from 'lucide-react';
+import { Camera, ChevronRight, AlertTriangle, Fuel, CircleDollarSign, UtensilsCrossed, Trash2, CloudOff, Package } from 'lucide-react';
 import FloatingActionButton from './FloatingActionButton';
 import { toast } from 'sonner';
+import NuevoGastoSheet, { type NuevoGastoData, type GastoTipo as FormGastoTipo } from './NuevoGastoSheet';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import {
   AlertDialog,
