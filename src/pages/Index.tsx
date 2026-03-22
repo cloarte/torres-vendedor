@@ -24,7 +24,7 @@ const Index = () => {
       case 'pedidos':
         return <PedidosTab />;
       case 'gastos':
-        return <PlaceholderTab name="Gastos" />;
+        return <GastosTab />;
       case 'datos':
         return <PlaceholderTab name="Mis Datos" />;
       case 'perfil':
