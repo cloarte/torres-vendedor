@@ -67,16 +67,32 @@ const initialBorradores: Gasto[] = [
 const GastosTab = () => {
   const navigate = useNavigate();
   const [borradores, setBorradores] = useState<Gasto[]>(initialBorradores);
+  const [lotes, setLotes] = useState<Lote[]>(initialLotes);
   const [selectedGasto, setSelectedGasto] = useState<Gasto | null>(null);
   const [swipedId, setSwipedId] = useState<string | null>(null);
   const [showNuevoGasto, setShowNuevoGasto] = useState(false);
+  const [showEnviarLote, setShowEnviarLote] = useState(false);
 
   const handleAddGasto = (data: NuevoGastoData) => {
     setBorradores((prev) => [data as Gasto, ...prev]);
   };
 
+  const handleSendLote = (sentIds: string[], loteTotal: number) => {
+    const sentGastos = borradores.filter((g) => sentIds.includes(g.id));
+    const newLote: Lote = {
+      id: `LOT-${Date.now()}`,
+      status: 'ENVIADO',
+      periodo: `${sentGastos[sentGastos.length - 1]?.fecha} — ${sentGastos[0]?.fecha}`,
+      total: loteTotal,
+      gastoCount: sentIds.length,
+    };
+    setLotes((prev) => [newLote, ...prev]);
+    setBorradores((prev) => prev.filter((g) => !sentIds.includes(g.id)));
+    toast.success('Lote enviado. Recibirás notificación cuando sea revisado.');
+  };
+
   const totalBorrador = borradores.reduce((sum, g) => sum + g.monto, 0);
-  const hasDevuelto = mockLotes.some((l) => l.status === 'DEVUELTO');
+  const hasDevuelto = lotes.some((l) => l.status === 'DEVUELTO');
 
   const handleDelete = (id: string) => {
     setBorradores((prev) => prev.filter((g) => g.id !== id));
