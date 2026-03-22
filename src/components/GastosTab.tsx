@@ -54,7 +54,7 @@ const loteStatusConfig: Record<LoteStatus, { bg: string; text: string; label: st
   DEVUELTO: { bg: 'bg-red-100', text: 'text-red-700', label: 'Devuelto' },
 };
 
-const mockLotes: Lote[] = [
+const initialLotes: Lote[] = [
   { id: 'LOT-001', status: 'APROBADO', periodo: '15/03 — 19/03', total: 520, gastoCount: 5 },
 ];
 
