@@ -332,6 +332,13 @@ const GastosTab = () => {
           })()}
         </SheetContent>
       </Sheet>
+
+      <EnviarLoteSheet
+        open={showEnviarLote}
+        onOpenChange={setShowEnviarLote}
+        borradores={borradores}
+        onSend={handleSendLote}
+      />
     </div>
   );
 };
