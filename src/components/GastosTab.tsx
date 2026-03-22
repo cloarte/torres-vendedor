@@ -129,11 +129,11 @@ const GastosTab = () => {
       </div>
 
       {/* Lotes Section */}
-      {mockLotes.length > 0 && (
+      {lotes.length > 0 && (
         <div className="mb-5 animate-fade-in-up" style={{ animationDelay: '60ms' }}>
           <h2 className="text-sm font-semibold text-foreground mb-2">Lotes enviados</h2>
           <div className="space-y-2">
-            {mockLotes.map((lote) => {
+            {lotes.map((lote) => {
               const st = loteStatusConfig[lote.status];
               return (
                 <div key={lote.id} className="bg-card rounded-xl p-4 shadow-sm">
