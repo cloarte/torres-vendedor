@@ -17,7 +17,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 
-type GastoTipo = 'COMBUSTIBLE' | 'PEAJE' | 'VIATICO' | 'OTRO';
+type GastoTipo = 'COMBUSTIBLE' | 'PEAJE' | 'DESCARGA' | 'VIATICO' | 'OTRO';
 type LoteStatus = 'ENVIADO' | 'APROBADO' | 'DEVUELTO';
 
 interface Gasto {
@@ -27,6 +27,7 @@ interface Gasto {
   descripcion: string;
   fecha: string;
   hasPhoto: boolean;
+  syncPending?: boolean;
 }
 
 interface Lote {
