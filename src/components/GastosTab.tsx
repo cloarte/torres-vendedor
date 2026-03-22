@@ -42,6 +42,7 @@ interface Lote {
 const tipoConfig: Record<GastoTipo, { bg: string; text: string; label: string; icon: typeof Fuel }> = {
   COMBUSTIBLE: { bg: 'bg-orange-100', text: 'text-orange-700', label: 'Combustible', icon: Fuel },
   PEAJE: { bg: 'bg-violet-100', text: 'text-violet-700', label: 'Peaje', icon: CircleDollarSign },
+  DESCARGA: { bg: 'bg-sky-100', text: 'text-sky-700', label: 'Descarga', icon: Package },
   VIATICO: { bg: 'bg-emerald-100', text: 'text-emerald-700', label: 'Viático', icon: UtensilsCrossed },
   OTRO: { bg: 'bg-slate-100', text: 'text-slate-600', label: 'Otro', icon: CircleDollarSign },
 };
