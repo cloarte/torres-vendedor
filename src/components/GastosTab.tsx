@@ -4,6 +4,7 @@ import { Camera, ChevronRight, AlertTriangle, Fuel, CircleDollarSign, UtensilsCr
 import FloatingActionButton from './FloatingActionButton';
 import { toast } from 'sonner';
 import NuevoGastoSheet, { type NuevoGastoData, type GastoTipo as FormGastoTipo } from './NuevoGastoSheet';
+import EnviarLoteSheet from './EnviarLoteSheet';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import {
   AlertDialog,
@@ -53,7 +54,7 @@ const loteStatusConfig: Record<LoteStatus, { bg: string; text: string; label: st
   DEVUELTO: { bg: 'bg-red-100', text: 'text-red-700', label: 'Devuelto' },
 };
 
-const mockLotes: Lote[] = [
+const initialLotes: Lote[] = [
   { id: 'LOT-001', status: 'APROBADO', periodo: '15/03 — 19/03', total: 520, gastoCount: 5 },
 ];
 
@@ -66,16 +67,32 @@ const initialBorradores: Gasto[] = [
 const GastosTab = () => {
   const navigate = useNavigate();
   const [borradores, setBorradores] = useState<Gasto[]>(initialBorradores);
+  const [lotes, setLotes] = useState<Lote[]>(initialLotes);
   const [selectedGasto, setSelectedGasto] = useState<Gasto | null>(null);
   const [swipedId, setSwipedId] = useState<string | null>(null);
   const [showNuevoGasto, setShowNuevoGasto] = useState(false);
+  const [showEnviarLote, setShowEnviarLote] = useState(false);
 
   const handleAddGasto = (data: NuevoGastoData) => {
     setBorradores((prev) => [data as Gasto, ...prev]);
   };
 
+  const handleSendLote = (sentIds: string[], loteTotal: number) => {
+    const sentGastos = borradores.filter((g) => sentIds.includes(g.id));
+    const newLote: Lote = {
+      id: `LOT-${Date.now()}`,
+      status: 'ENVIADO',
+      periodo: `${sentGastos[sentGastos.length - 1]?.fecha} — ${sentGastos[0]?.fecha}`,
+      total: loteTotal,
+      gastoCount: sentIds.length,
+    };
+    setLotes((prev) => [newLote, ...prev]);
+    setBorradores((prev) => prev.filter((g) => !sentIds.includes(g.id)));
+    toast.success('Lote enviado. Recibirás notificación cuando sea revisado.');
+  };
+
   const totalBorrador = borradores.reduce((sum, g) => sum + g.monto, 0);
-  const hasDevuelto = mockLotes.some((l) => l.status === 'DEVUELTO');
+  const hasDevuelto = lotes.some((l) => l.status === 'DEVUELTO');
 
   const handleDelete = (id: string) => {
     setBorradores((prev) => prev.filter((g) => g.id !== id));
@@ -112,11 +129,11 @@ const GastosTab = () => {
       </div>
 
       {/* Lotes Section */}
-      {mockLotes.length > 0 && (
+      {lotes.length > 0 && (
         <div className="mb-5 animate-fade-in-up" style={{ animationDelay: '60ms' }}>
           <h2 className="text-sm font-semibold text-foreground mb-2">Lotes enviados</h2>
           <div className="space-y-2">
-            {mockLotes.map((lote) => {
+            {lotes.map((lote) => {
               const st = loteStatusConfig[lote.status];
               return (
                 <div key={lote.id} className="bg-card rounded-xl p-4 shadow-sm">
@@ -182,7 +199,7 @@ const GastosTab = () => {
           <h2 className="text-sm font-semibold text-foreground">Gastos en borrador</h2>
           {borradores.length > 0 && (
             <button
-              onClick={() => toast.info('Enviar a aprobación — próximamente')}
+              onClick={() => setShowEnviarLote(true)}
               className="text-xs font-semibold text-primary active:scale-95 transition-transform"
             >
               Enviar a aprobación →
@@ -315,6 +332,13 @@ const GastosTab = () => {
           })()}
         </SheetContent>
       </Sheet>
+
+      <EnviarLoteSheet
+        open={showEnviarLote}
+        onOpenChange={setShowEnviarLote}
+        borradores={borradores}
+        onSend={handleSendLote}
+      />
     </div>
   );
 };
