@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Camera, ChevronRight, AlertTriangle, Fuel, CircleDollarSign, UtensilsCrossed, Trash2 } from 'lucide-react';
+import { Camera, ChevronRight, AlertTriangle, Fuel, CircleDollarSign, UtensilsCrossed, Trash2, CloudOff, Package } from 'lucide-react';
 import FloatingActionButton from './FloatingActionButton';
 import { toast } from 'sonner';
+import NuevoGastoSheet, { type NuevoGastoData, type GastoTipo as FormGastoTipo } from './NuevoGastoSheet';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import {
   AlertDialog,
@@ -16,7 +17,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 
-type GastoTipo = 'COMBUSTIBLE' | 'PEAJE' | 'VIATICO' | 'OTRO';
+type GastoTipo = 'COMBUSTIBLE' | 'PEAJE' | 'DESCARGA' | 'VIATICO' | 'OTRO';
 type LoteStatus = 'ENVIADO' | 'APROBADO' | 'DEVUELTO';
 
 interface Gasto {
@@ -26,6 +27,7 @@ interface Gasto {
   descripcion: string;
   fecha: string;
   hasPhoto: boolean;
+  syncPending?: boolean;
 }
 
 interface Lote {
@@ -40,6 +42,7 @@ interface Lote {
 const tipoConfig: Record<GastoTipo, { bg: string; text: string; label: string; icon: typeof Fuel }> = {
   COMBUSTIBLE: { bg: 'bg-orange-100', text: 'text-orange-700', label: 'Combustible', icon: Fuel },
   PEAJE: { bg: 'bg-violet-100', text: 'text-violet-700', label: 'Peaje', icon: CircleDollarSign },
+  DESCARGA: { bg: 'bg-sky-100', text: 'text-sky-700', label: 'Descarga', icon: Package },
   VIATICO: { bg: 'bg-emerald-100', text: 'text-emerald-700', label: 'Viático', icon: UtensilsCrossed },
   OTRO: { bg: 'bg-slate-100', text: 'text-slate-600', label: 'Otro', icon: CircleDollarSign },
 };
@@ -65,6 +68,11 @@ const GastosTab = () => {
   const [borradores, setBorradores] = useState<Gasto[]>(initialBorradores);
   const [selectedGasto, setSelectedGasto] = useState<Gasto | null>(null);
   const [swipedId, setSwipedId] = useState<string | null>(null);
+  const [showNuevoGasto, setShowNuevoGasto] = useState(false);
+
+  const handleAddGasto = (data: NuevoGastoData) => {
+    setBorradores((prev) => [data as Gasto, ...prev]);
+  };
 
   const totalBorrador = borradores.reduce((sum, g) => sum + g.monto, 0);
   const hasDevuelto = mockLotes.some((l) => l.status === 'DEVUELTO');
@@ -242,6 +250,7 @@ const GastosTab = () => {
                   <div className="flex items-center gap-2 mt-1">
                     <span className="text-xs text-muted-foreground">{gasto.fecha}</span>
                     {gasto.hasPhoto && <Camera className="w-3.5 h-3.5 text-muted-foreground" />}
+                    {gasto.syncPending && <CloudOff className="w-3.5 h-3.5 text-muted-foreground" />}
                   </div>
                 </div>
               </div>
@@ -257,8 +266,14 @@ const GastosTab = () => {
       </div>
 
       <FloatingActionButton
-        onClick={() => toast.info('Nuevo gasto — próximamente')}
+        onClick={() => setShowNuevoGasto(true)}
         label="Nuevo Gasto"
+      />
+
+      <NuevoGastoSheet
+        open={showNuevoGasto}
+        onOpenChange={setShowNuevoGasto}
+        onSave={handleAddGasto}
       />
 
       {/* Gasto Detail Sheet */}
