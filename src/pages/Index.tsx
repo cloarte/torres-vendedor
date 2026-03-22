@@ -4,6 +4,7 @@ import CanalSelection from './CanalSelection';
 import MobileLayout, { TabId } from '@/components/MobileLayout';
 import PedidosTab from '@/components/PedidosTab';
 import GastosTab from '@/components/GastosTab';
+import MisDatosTab from '@/components/MisDatosTab';
 
 const PlaceholderTab = ({ name }: { name: string }) => (
   <div className="flex items-center justify-center h-64 text-muted-foreground text-sm">
