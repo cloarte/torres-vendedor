@@ -47,6 +47,7 @@ const PedidosTab = () => {
   const [activeFilter, setActiveFilter] = useState<OrderStatus | 'ALL'>('ALL');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const { selectedCanal } = useApp();
+  const navigate = useNavigate();
 
   const filtered = activeFilter === 'ALL'
     ? mockOrders
