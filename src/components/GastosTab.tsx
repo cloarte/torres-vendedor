@@ -68,6 +68,11 @@ const GastosTab = () => {
   const [borradores, setBorradores] = useState<Gasto[]>(initialBorradores);
   const [selectedGasto, setSelectedGasto] = useState<Gasto | null>(null);
   const [swipedId, setSwipedId] = useState<string | null>(null);
+  const [showNuevoGasto, setShowNuevoGasto] = useState(false);
+
+  const handleAddGasto = (data: NuevoGastoData) => {
+    setBorradores((prev) => [data as Gasto, ...prev]);
+  };
 
   const totalBorrador = borradores.reduce((sum, g) => sum + g.monto, 0);
   const hasDevuelto = mockLotes.some((l) => l.status === 'DEVUELTO');
