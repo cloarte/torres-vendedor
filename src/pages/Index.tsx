@@ -30,7 +30,7 @@ const Index = () => {
       case 'datos':
         return <MisDatosTab />;
       case 'perfil':
-        return <PlaceholderTab name="Perfil" />;
+        return <PerfilTab />;
     }
   };
 
