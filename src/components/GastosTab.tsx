@@ -4,6 +4,7 @@ import { Camera, ChevronRight, AlertTriangle, Fuel, CircleDollarSign, UtensilsCr
 import FloatingActionButton from './FloatingActionButton';
 import { toast } from 'sonner';
 import NuevoGastoSheet, { type NuevoGastoData, type GastoTipo as FormGastoTipo } from './NuevoGastoSheet';
+import EnviarLoteSheet from './EnviarLoteSheet';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import {
   AlertDialog,
