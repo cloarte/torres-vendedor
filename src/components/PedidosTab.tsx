@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import FloatingActionButton from './FloatingActionButton';
 import { toast } from 'sonner';
 import { useApp } from '@/contexts/AppContext';
