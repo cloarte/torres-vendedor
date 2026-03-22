@@ -133,7 +133,7 @@ const PedidosTab = () => {
       {/* Sobrestock button for Tradicional */}
       {selectedCanal?.type === 'tradicional' && (
         <button
-          onClick={() => toast.info('Solicitar sobrestock — próximamente')}
+          onClick={() => navigate('/pedidos/nuevo?sobrestock=1')}
           className="mt-4 w-full border border-border rounded-xl py-2.5 text-xs text-muted-foreground font-medium active:scale-[0.98] transition-transform"
         >
           + Solicitar Sobrestock de Ruta
@@ -141,7 +141,7 @@ const PedidosTab = () => {
       )}
 
       <FloatingActionButton
-        onClick={() => toast.info('Nuevo pedido — próximamente')}
+        onClick={() => navigate('/pedidos/nuevo')}
         label="Nuevo Pedido"
       />
 
