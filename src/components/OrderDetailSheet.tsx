@@ -191,8 +191,7 @@ const OrderDetailSheet = ({ order, open, onOpenChange, onOrderUpdated }: OrderDe
 
   // ─── DETAIL VIEW ───
   const renderDetail = () => (
-    <div className="flex flex-col h-full">
-      <div className="flex-1 overflow-y-auto px-4 pb-4">
+    <div className="overflow-y-auto px-4 pb-24" style={{ WebkitOverflowScrolling: 'touch' }}>
         {/* Header row */}
         <div className="flex items-center justify-between mb-4 pt-1">
           <h2 className="text-base font-semibold text-foreground">Pedido #{order.id.split('-').pop()}</h2>
@@ -299,7 +298,6 @@ const OrderDetailSheet = ({ order, open, onOpenChange, onOrderUpdated }: OrderDe
             Cancelar pedido
           </button>
         )}
-      </div>
     </div>
   );
 
@@ -620,7 +618,7 @@ const OrderDetailSheet = ({ order, open, onOpenChange, onOrderUpdated }: OrderDe
       <Sheet open={open} onOpenChange={handleOpenChange}>
         <SheetContent
           side="bottom"
-          className={`rounded-t-2xl p-0 pt-4 ${view === 'detail' ? 'max-h-[80vh]' : 'h-[90vh]'}`}
+          className={`rounded-t-2xl p-0 pt-4 ${view === 'detail' ? 'max-h-[90dvh]' : 'h-[90vh]'}`}
         >
           <div className="w-10 h-1 bg-muted-foreground/20 rounded-full mx-auto mb-3 flex-shrink-0" />
           <div className="h-full flex flex-col overflow-hidden">
