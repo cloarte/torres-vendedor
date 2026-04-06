@@ -6,6 +6,7 @@ import PedidosTab from '@/components/PedidosTab';
 import GastosTab from '@/components/GastosTab';
 import MisDatosTab from '@/components/MisDatosTab';
 import PerfilTab from '@/components/PerfilTab';
+import VentaEspecialTab from '@/components/VentaEspecialTab';
 
 const PlaceholderTab = ({ name }: { name: string }) => (
   <div className="flex items-center justify-center h-64 text-muted-foreground text-sm">
@@ -27,6 +28,8 @@ const Index = () => {
         return <PedidosTab />;
       case 'gastos':
         return <GastosTab />;
+      case 'venta-especial':
+        return <VentaEspecialTab />;
       case 'datos':
         return <MisDatosTab />;
       case 'perfil':
