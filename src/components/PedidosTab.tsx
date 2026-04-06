@@ -34,9 +34,8 @@ const PedidosTab = () => {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [, setRefresh] = useState(0);
-  const { selectedCanal } = useApp();
+  const { selectedCanal, orders, vendorName } = useApp();
   const navigate = useNavigate();
-  const vendorName = 'Juan López';
 
   const filtered = (() => {
     if (activeFilter === 'ALL') return orders;
