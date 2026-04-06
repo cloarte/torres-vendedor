@@ -281,7 +281,7 @@ const OrderDetailSheet = ({ order, open, onOpenChange, onOrderUpdated }: OrderDe
         )}
 
         {/* Action buttons */}
-        {order.status === 'LISTO_DESPACHO' && (
+        {(order.status === 'LISTO_DESPACHO' || order.status === 'CONFIRMADO') && (
           <button
             onClick={startDelivery}
             className="w-full h-14 mt-4 bg-[#1E3A5F] text-white rounded-xl text-base font-semibold active:scale-[0.97] transition-transform flex items-center justify-center gap-2"
@@ -499,8 +499,28 @@ const OrderDetailSheet = ({ order, open, onOpenChange, onOrderUpdated }: OrderDe
                   className="flex-1 text-3xl font-bold text-foreground bg-transparent focus:outline-none placeholder:text-muted-foreground/30"
                 />
               </div>
-              {/* Photo for Yape/Deposito */}
-              {(payment.method === 'YAPE' || payment.method === 'DEPOSITO') && (
+              {/* Reference field for Yape */}
+              {payment.method === 'YAPE' && (
+                <input
+                  type="text"
+                  value={payment.reference}
+                  onChange={e => updatePayment(index, 'reference', e.target.value)}
+                  placeholder="Ej: 123456789"
+                  className="mt-3 w-full h-10 px-3 rounded-lg border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+                />
+              )}
+              {/* Reference field for Transferencia/Deposito */}
+              {(payment.method === 'TRANSFERENCIA' || payment.method === 'DEPOSITO') && (
+                <input
+                  type="text"
+                  value={payment.reference}
+                  onChange={e => updatePayment(index, 'reference', e.target.value)}
+                  placeholder="N° operación / referencia (ej: 987654321)"
+                  className="mt-3 w-full h-10 px-3 rounded-lg border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+                />
+              )}
+              {/* Photo for Yape, Deposito, Transferencia */}
+              {(payment.method === 'YAPE' || payment.method === 'DEPOSITO' || payment.method === 'TRANSFERENCIA') && (
                 <div className="mt-3">
                   {payment.photoUrl ? (
                     <div className="flex items-center gap-2">
@@ -519,9 +539,11 @@ const OrderDetailSheet = ({ order, open, onOpenChange, onOrderUpdated }: OrderDe
                         className="w-full h-10 border border-dashed border-border rounded-xl text-sm text-muted-foreground font-medium flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
                       >
                         <Camera className="w-4 h-4" />
-                        Adjuntar comprobante
+                        {payment.method === 'YAPE' ? 'Adjuntar captura de pantalla' : 'Adjuntar comprobante'}
                       </button>
-                      <p className="text-xs text-muted-foreground mt-1">Recomendado para Yape y depósitos</p>
+                      <p className="text-xs text-amber-600 mt-1">
+                        {payment.method === 'YAPE' ? '📸 Recomendado adjuntar captura del Yape' : 'Recomendado para transferencias y depósitos'}
+                      </p>
                     </>
                   )}
                 </div>
