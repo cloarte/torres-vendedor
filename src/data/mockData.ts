@@ -23,11 +23,24 @@ export interface OrderProduct {
   quantity: number;
 }
 
+export type PaymentMethod = 'EFECTIVO' | 'YAPE' | 'DEPOSITO' | 'TRANSFERENCIA' | 'CHEQUE';
+
 export interface PaymentEntry {
-  method: 'EFECTIVO' | 'TRANSFERENCIA' | 'YAPE' | 'CHEQUE';
+  method: PaymentMethod;
   amount: number;
   reference?: string;
+  photoUrl?: string;
 }
+
+export interface SobrestockItem {
+  product: Product;
+  available: number;
+}
+
+export const mockSobrestock: SobrestockItem[] = [
+  { product: { id: 'P-010', sku: 'QUE-VAI-01', name: 'Queque Vainilla', priceWithIGV: 5.10, priceWithoutIGV: 4.32, unit: 'und' }, available: 4 },
+  { product: { id: 'P-006', sku: 'TOR-006', name: 'Margarina Torres 450g', priceWithIGV: 6.80, priceWithoutIGV: 5.76, unit: 'und' }, available: 4 },
+];
 
 export interface Order {
   id: string;
