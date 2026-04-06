@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import FloatingActionButton from './FloatingActionButton';
+import OrderDetailSheet from './OrderDetailSheet';
 import { useApp } from '@/contexts/AppContext';
 import { mockOrders, type Order, type OrderStatus } from '@/data/mockData';
 
@@ -30,23 +31,29 @@ const summaryCards = [
 
 const PedidosTab = () => {
   const [activeFilter, setActiveFilter] = useState<OrderStatus | 'ALL'>('ALL');
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [, setRefresh] = useState(0);
   const { selectedCanal } = useApp();
   const navigate = useNavigate();
   const vendorName = 'Juan López';
 
-  // LISTO_DESPACHO filter shows ALL orders for this route (including from other creators)
-  // All other filters show only this vendor's orders
   const filtered = (() => {
-    if (activeFilter === 'ALL') {
-      return mockOrders;
-    }
+    if (activeFilter === 'ALL') return mockOrders;
     if (activeFilter === 'LISTO_DESPACHO') {
-      // Show all LISTO_DESPACHO for vendor's route
       return mockOrders.filter((o) => o.status === 'LISTO_DESPACHO');
     }
-    // Other filters: only vendor's own orders
     return mockOrders.filter((o) => o.status === activeFilter && o.creadoPor === vendorName);
   })();
+
+  const handleOrderClick = (order: Order) => {
+    setSelectedOrder(order);
+    setSheetOpen(true);
+  };
+
+  const handleOrderUpdated = useCallback(() => {
+    setRefresh(r => r + 1);
+  }, []);
 
   return (
     <div className="pb-16">
@@ -96,7 +103,7 @@ const PedidosTab = () => {
               key={order.id}
               className="bg-card rounded-xl p-4 shadow-sm active:scale-[0.98] transition-transform duration-100 cursor-pointer animate-fade-in-up"
               style={{ animationDelay: `${(i + 3) * 60}ms` }}
-              onClick={() => navigate(`/pedidos/${order.id}`)}
+              onClick={() => handleOrderClick(order)}
             >
               <div className="flex items-center justify-between mb-1">
                 <span className="text-xs text-muted-foreground">{order.id}</span>
@@ -142,6 +149,13 @@ const PedidosTab = () => {
       <FloatingActionButton
         onClick={() => navigate('/pedidos/nuevo')}
         label="Nuevo Pedido"
+      />
+
+      <OrderDetailSheet
+        order={selectedOrder}
+        open={sheetOpen}
+        onOpenChange={setSheetOpen}
+        onOrderUpdated={handleOrderUpdated}
       />
     </div>
   );
