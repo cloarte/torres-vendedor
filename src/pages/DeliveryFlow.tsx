@@ -115,13 +115,6 @@ const DeliveryFlow = () => {
     setProductSearch('');
   };
 
-  const filteredProducts = useMemo(() => {
-    const existingIds = new Set(items.map((i) => i.product.id));
-    const available = mockProducts.filter((p) => !existingIds.has(p.id));
-    if (!productSearch.trim()) return available;
-    const q = productSearch.toLowerCase();
-    return available.filter((p) => p.name.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q));
-  }, [productSearch, items]);
 
   const updatePayment = (index: number, field: keyof PaymentRow, value: string) => {
     setPayments((prev) => prev.map((p, i) => (i === index ? { ...p, [field]: value } : p)));
