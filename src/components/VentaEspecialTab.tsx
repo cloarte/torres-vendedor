@@ -5,7 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { mockClients } from '@/data/mockData';
+import { mockClients, Order } from '@/data/mockData';
+import { useApp } from '@/contexts/AppContext';
 import { toast } from 'sonner';
 
 interface SpecialProduct {
@@ -96,6 +97,7 @@ const ProductsTable = ({ products, onAdd }: { products: SpecialProduct[]; onAdd?
 );
 
 const VentaEspecialTab = () => {
+  const { vendorName, addOrder } = useApp();
   const [flowOpen, setFlowOpen] = useState(false);
   const [step, setStep] = useState<FlowStep>('select-client');
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
@@ -130,7 +132,33 @@ const VentaEspecialTab = () => {
   };
 
   const handleConfirm = () => {
-    toast.success('Pedido especial creado. Rosnelli lo procesará para despacho.');
+    if (!selectedClient) return;
+    const orderId = `PED-2026-${String(Math.floor(Math.random() * 9000) + 1000)}`;
+    const newOrder: Order = {
+      id: orderId,
+      client: selectedClient.name,
+      clientId: selectedClient.id,
+      canal: selectedClient.canal,
+      fechaEntrega: 'Hoy',
+      total,
+      status: 'PENDIENTE',
+      creadoPor: vendorName,
+      rutaId: selectedClient.rutaId,
+      origen: 'ESPECIAL',
+      products: orderLines.map((l) => ({
+        product: {
+          id: l.product.id,
+          sku: l.product.lote,
+          name: l.product.name,
+          priceWithIGV: l.product.precioEspecial,
+          priceWithoutIGV: l.product.precioEspecial / 1.18,
+          unit: 'und',
+        },
+        quantity: l.quantity,
+      })),
+    };
+    addOrder(newOrder);
+    toast.success('Pedido especial enviado. Rosnelli lo verá en su bandeja.');
     resetFlow();
   };
 
