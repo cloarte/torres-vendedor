@@ -16,6 +16,8 @@ export interface Product {
   unit: string;
 }
 
+export type OrderOrigen = 'INTERNO' | 'PORTAL' | 'ESPECIAL';
+
 export type OrderStatus = 'PENDIENTE' | 'CONFIRMADO' | 'LISTO_DESPACHO' | 'ENTREGADO' | 'CANCELADO' | 'RECHAZADO';
 
 export interface OrderProduct {
@@ -52,6 +54,7 @@ export interface Order {
   status: OrderStatus;
   creadoPor: string;
   rutaId?: string;
+  origen?: OrderOrigen;
   products: OrderProduct[];
   notes?: string;
   isOffline?: boolean;

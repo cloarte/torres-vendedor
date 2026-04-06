@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import FloatingActionButton from './FloatingActionButton';
 import OrderDetailSheet from './OrderDetailSheet';
 import { useApp } from '@/contexts/AppContext';
-import { mockOrders, type Order, type OrderStatus } from '@/data/mockData';
+import { type Order, type OrderStatus } from '@/data/mockData';
 
 const statusConfig: Record<OrderStatus, { bg: string; text: string; label: string }> = {
   PENDIENTE: { bg: 'bg-amber-100', text: 'text-amber-700', label: 'Pendiente' },
@@ -34,16 +34,15 @@ const PedidosTab = () => {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [, setRefresh] = useState(0);
-  const { selectedCanal } = useApp();
+  const { selectedCanal, orders, vendorName } = useApp();
   const navigate = useNavigate();
-  const vendorName = 'Juan López';
 
   const filtered = (() => {
-    if (activeFilter === 'ALL') return mockOrders;
+    if (activeFilter === 'ALL') return orders;
     if (activeFilter === 'LISTO_DESPACHO') {
-      return mockOrders.filter((o) => o.status === 'LISTO_DESPACHO');
+      return orders.filter((o) => o.status === 'LISTO_DESPACHO');
     }
-    return mockOrders.filter((o) => o.status === activeFilter && o.creadoPor === vendorName);
+    return orders.filter((o) => o.status === activeFilter && o.creadoPor === vendorName);
   })();
 
   const handleOrderClick = (order: Order) => {
