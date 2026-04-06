@@ -55,6 +55,14 @@ const DeliveryFlow = () => {
   const [observations, setObservations] = useState('');
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
+  const filteredProducts = useMemo(() => {
+    const existingIds = new Set(items.map((i) => i.product.id));
+    const available = mockProducts.filter((p) => !existingIds.has(p.id));
+    if (!productSearch.trim()) return available;
+    const q = productSearch.toLowerCase();
+    return available.filter((p) => p.name.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q));
+  }, [productSearch, items]);
+
   if (!order) {
     return (
       <div className="flex flex-col h-screen bg-background items-center justify-center">
