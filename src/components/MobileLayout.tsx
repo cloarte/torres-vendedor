@@ -1,8 +1,8 @@
 import { ReactNode } from 'react';
-import { ClipboardList, Receipt, BarChart2, User, WifiOff } from 'lucide-react';
+import { ClipboardList, Receipt, BarChart2, User, WifiOff, Tag } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
 
-export type TabId = 'pedidos' | 'gastos' | 'datos' | 'perfil';
+export type TabId = 'pedidos' | 'gastos' | 'venta-especial' | 'datos' | 'perfil';
 
 interface MobileLayoutProps {
   activeTab: TabId;
@@ -13,6 +13,7 @@ interface MobileLayoutProps {
 const tabs: { id: TabId; label: string; icon: typeof ClipboardList }[] = [
   { id: 'pedidos', label: 'Pedidos', icon: ClipboardList },
   { id: 'gastos', label: 'Gastos', icon: Receipt },
+  { id: 'venta-especial', label: 'Vta. Esp.', icon: Tag },
   { id: 'datos', label: 'Mis Datos', icon: BarChart2 },
   { id: 'perfil', label: 'Perfil', icon: User },
 ];
@@ -20,6 +21,7 @@ const tabs: { id: TabId; label: string; icon: typeof ClipboardList }[] = [
 const tabTitles: Record<TabId, string> = {
   pedidos: 'Pedidos',
   gastos: 'Gastos',
+  'venta-especial': 'Venta Especial',
   datos: 'Mis Datos',
   perfil: 'Perfil',
 };

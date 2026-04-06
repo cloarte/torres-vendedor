@@ -27,6 +27,8 @@ const Index = () => {
         return <PedidosTab />;
       case 'gastos':
         return <GastosTab />;
+      case 'venta-especial':
+        return <VentaEspecialTab />;
       case 'datos':
         return <MisDatosTab />;
       case 'perfil':
