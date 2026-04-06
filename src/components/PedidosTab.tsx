@@ -1,39 +1,24 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import FloatingActionButton from './FloatingActionButton';
-import { toast } from 'sonner';
 import { useApp } from '@/contexts/AppContext';
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-
-type OrderStatus = 'PENDIENTE' | 'CONFIRMADO' | 'LISTO_DESPACHO' | 'CANCELADO';
-
-interface Order {
-  id: string;
-  client: string;
-  canal: string;
-  fechaEntrega: string;
-  total: number;
-  status: OrderStatus;
-}
-
-const mockOrders: Order[] = [
-  { id: 'PED-2026-0050', client: 'Bodega San Martín', canal: 'Tradicional', fechaEntrega: 'Hoy', total: 480, status: 'PENDIENTE' },
-  { id: 'PED-2026-0049', client: 'Minimarket El Sol', canal: 'Tradicional', fechaEntrega: 'Hoy', total: 720, status: 'CONFIRMADO' },
-  { id: 'PED-2026-0048', client: 'Bodega La Cruz', canal: 'Tradicional', fechaEntrega: 'Mañana', total: 350, status: 'PENDIENTE' },
-  { id: 'PED-2026-0045', client: 'Bodega Norte', canal: 'Tradicional', fechaEntrega: 'Ayer', total: 290, status: 'LISTO_DESPACHO' },
-];
+import { mockOrders, type Order, type OrderStatus } from '@/data/mockData';
 
 const statusConfig: Record<OrderStatus, { bg: string; text: string; label: string }> = {
   PENDIENTE: { bg: 'bg-amber-100', text: 'text-amber-700', label: 'Pendiente' },
   CONFIRMADO: { bg: 'bg-blue-100', text: 'text-blue-700', label: 'Confirmado' },
   LISTO_DESPACHO: { bg: 'bg-green-100', text: 'text-green-700', label: 'Listo despacho' },
+  ENTREGADO: { bg: 'bg-emerald-100', text: 'text-emerald-700', label: 'Entregado' },
   CANCELADO: { bg: 'bg-red-100', text: 'text-red-700', label: 'Cancelado' },
+  RECHAZADO: { bg: 'bg-red-100', text: 'text-red-700', label: 'Rechazado' },
 };
 
 const filters: { label: string; value: OrderStatus | 'ALL' }[] = [
   { label: 'Todos', value: 'ALL' },
   { label: 'Pendiente', value: 'PENDIENTE' },
+  { label: 'Listo Despacho', value: 'LISTO_DESPACHO' },
   { label: 'Confirmado', value: 'CONFIRMADO' },
+  { label: 'Entregado', value: 'ENTREGADO' },
   { label: 'Cancelado', value: 'CANCELADO' },
 ];
 
@@ -45,13 +30,23 @@ const summaryCards = [
 
 const PedidosTab = () => {
   const [activeFilter, setActiveFilter] = useState<OrderStatus | 'ALL'>('ALL');
-  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const { selectedCanal } = useApp();
   const navigate = useNavigate();
+  const vendorName = 'Juan López';
 
-  const filtered = activeFilter === 'ALL'
-    ? mockOrders
-    : mockOrders.filter((o) => o.status === activeFilter);
+  // LISTO_DESPACHO filter shows ALL orders for this route (including from other creators)
+  // All other filters show only this vendor's orders
+  const filtered = (() => {
+    if (activeFilter === 'ALL') {
+      return mockOrders;
+    }
+    if (activeFilter === 'LISTO_DESPACHO') {
+      // Show all LISTO_DESPACHO for vendor's route
+      return mockOrders.filter((o) => o.status === 'LISTO_DESPACHO');
+    }
+    // Other filters: only vendor's own orders
+    return mockOrders.filter((o) => o.status === activeFilter && o.creadoPor === vendorName);
+  })();
 
   return (
     <div className="pb-16">
@@ -101,7 +96,7 @@ const PedidosTab = () => {
               key={order.id}
               className="bg-card rounded-xl p-4 shadow-sm active:scale-[0.98] transition-transform duration-100 cursor-pointer animate-fade-in-up"
               style={{ animationDelay: `${(i + 3) * 60}ms` }}
-              onClick={() => setSelectedOrder(order)}
+              onClick={() => navigate(`/pedidos/${order.id}`)}
             >
               <div className="flex items-center justify-between mb-1">
                 <span className="text-xs text-muted-foreground">{order.id}</span>
@@ -120,6 +115,9 @@ const PedidosTab = () => {
                   {order.canal}
                 </span>
                 <span className="text-xs text-muted-foreground">{order.fechaEntrega}</span>
+                {order.creadoPor !== vendorName && (
+                  <span className="text-[10px] text-muted-foreground">· por {order.creadoPor}</span>
+                )}
               </div>
             </div>
           );
@@ -145,46 +143,6 @@ const PedidosTab = () => {
         onClick={() => navigate('/pedidos/nuevo')}
         label="Nuevo Pedido"
       />
-
-      {/* Order Detail Sheet */}
-      <Sheet open={!!selectedOrder} onOpenChange={(open) => !open && setSelectedOrder(null)}>
-        <SheetContent side="bottom" className="rounded-t-2xl max-h-[70vh]">
-          {selectedOrder && (() => {
-            const st = statusConfig[selectedOrder.status];
-            return (
-              <>
-                <SheetHeader className="pb-4">
-                  <SheetTitle className="text-base">{selectedOrder.id}</SheetTitle>
-                </SheetHeader>
-                <div className="space-y-4 pb-6">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Estado</span>
-                    <span className={`text-xs px-2.5 py-0.5 rounded-full font-medium ${st.bg} ${st.text}`}>
-                      {st.label}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Cliente</span>
-                    <span className="text-sm font-semibold text-foreground">{selectedOrder.client}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Canal</span>
-                    <span className="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded font-medium">{selectedOrder.canal}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Fecha entrega</span>
-                    <span className="text-sm text-foreground">{selectedOrder.fechaEntrega}</span>
-                  </div>
-                  <div className="flex items-center justify-between border-t border-border pt-4">
-                    <span className="text-sm font-semibold text-foreground">Total</span>
-                    <span className="text-lg font-bold text-foreground">S/{selectedOrder.total.toFixed(2)}</span>
-                  </div>
-                </div>
-              </>
-            );
-          })()}
-        </SheetContent>
-      </Sheet>
     </div>
   );
 };
