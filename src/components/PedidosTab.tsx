@@ -31,6 +31,7 @@ const summaryCards = [
 
 const PedidosTab = () => {
   const [activeFilter, setActiveFilter] = useState<OrderStatus>('PENDIENTE');
+  const [viewMode, setViewMode] = useState<'cliente' | 'producto'>('cliente');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [, setRefresh] = useState(0);
@@ -38,6 +39,34 @@ const PedidosTab = () => {
   const navigate = useNavigate();
 
   const filtered = orders.filter((o) => o.status === activeFilter);
+
+  // Group line items by SKU for the "Por producto" view
+  const productGroups = (() => {
+    const map = new Map<string, { name: string; sku: string; orders: Set<string>; units: number; subtotal: number }>();
+    filtered.forEach((o) => {
+      o.products.forEach((lp) => {
+        const key = lp.product.sku;
+        const existing = map.get(key);
+        if (existing) {
+          existing.units += lp.quantity;
+          existing.subtotal += lp.quantity * lp.product.priceWithIGV;
+          existing.orders.add(o.id);
+        } else {
+          map.set(key, {
+            name: lp.product.name,
+            sku: lp.product.sku,
+            orders: new Set([o.id]),
+            units: lp.quantity,
+            subtotal: lp.quantity * lp.product.priceWithIGV,
+          });
+        }
+      });
+    });
+    return Array.from(map.values()).sort((a, b) => b.units - a.units);
+  })();
+
+  const totalProducts = productGroups.length;
+  const totalValue = productGroups.reduce((sum, p) => sum + p.subtotal, 0);
 
   const handleOrderClick = (order: Order) => {
     setSelectedOrder(order);
@@ -87,7 +116,32 @@ const PedidosTab = () => {
         </div>
       </div>
 
+      {/* Por cliente / Por producto toggle */}
+      <div className="bg-white border-b border-slate-200 px-4 py-2 -mx-4 mb-3 flex gap-2">
+        <button
+          onClick={() => setViewMode('cliente')}
+          className={`flex-1 text-center text-xs py-2 rounded-lg transition-colors ${
+            viewMode === 'cliente'
+              ? 'bg-[#1E3A5F] text-white font-medium'
+              : 'text-slate-500 bg-slate-100'
+          }`}
+        >
+          Por cliente
+        </button>
+        <button
+          onClick={() => setViewMode('producto')}
+          className={`flex-1 text-center text-xs py-2 rounded-lg transition-colors ${
+            viewMode === 'producto'
+              ? 'bg-[#1E3A5F] text-white font-medium'
+              : 'text-slate-500 bg-slate-100'
+          }`}
+        >
+          Por producto
+        </button>
+      </div>
+
       {/* Order Cards */}
+      {viewMode === 'cliente' && (
       <div className="space-y-2">
         {filtered.map((order, i) => {
           const st = statusConfig[order.status];
@@ -137,9 +191,47 @@ const PedidosTab = () => {
           </div>
         )}
       </div>
+      )}
+
+      {viewMode === 'producto' && (
+        <div>
+          {productGroups.length === 0 ? (
+            <div className="text-sm text-slate-400 text-center py-8">
+              Sin pedidos en este estado
+            </div>
+          ) : (
+            <>
+              <div className="bg-white rounded-xl border border-slate-100 overflow-hidden">
+                {productGroups.map((p) => (
+                  <div
+                    key={p.sku}
+                    className="px-4 py-3 border-b border-slate-100 last:border-0 flex items-start justify-between"
+                  >
+                    <div className="flex-1 min-w-0 pr-3">
+                      <div className="text-sm font-medium text-slate-800">{p.name}</div>
+                      <div className="text-xs text-slate-400">
+                        {p.sku} · {p.orders.size} {p.orders.size === 1 ? 'pedido' : 'pedidos'}
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm font-semibold text-[#1E3A5F]">× {p.units} uds</div>
+                      <div className="text-xs text-slate-500">S/ {p.subtotal.toFixed(2)}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="bg-slate-50 rounded-xl px-4 py-2.5 mt-2">
+                <div className="text-xs text-slate-500 text-right">
+                  {totalProducts} {totalProducts === 1 ? 'producto' : 'productos'} · S/ {totalValue.toFixed(2)} total
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      )}
 
       {/* Sobrestock button for Tradicional */}
-      {selectedCanal?.type === 'tradicional' && (
+      {viewMode === 'cliente' && selectedCanal?.type === 'tradicional' && (
         <button
           onClick={() => navigate('/pedidos/nuevo?sobrestock=1')}
           className="mt-4 w-full border border-border rounded-xl py-2.5 text-xs text-muted-foreground font-medium active:scale-[0.98] transition-transform"
