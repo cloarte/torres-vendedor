@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import { ClipboardList, Receipt, BarChart2, User, WifiOff, Tag } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
+import StockFlotantePill from './StockFlotantePill';
 
 export type TabId = 'pedidos' | 'gastos' | 'venta-especial' | 'datos' | 'perfil';
 
@@ -60,8 +61,11 @@ const MobileLayout = ({ activeTab, onTabChange, children }: MobileLayoutProps) =
             </span>
           )}
         </div>
-        <div className="w-8 h-8 rounded-full bg-primary-foreground/20 flex items-center justify-center">
-          <span className="text-primary-foreground text-xs font-semibold">{initials}</span>
+        <div className="flex items-center gap-2">
+          {activeTab === 'pedidos' && <StockFlotantePill />}
+          <div className="w-8 h-8 rounded-full bg-primary-foreground/20 flex items-center justify-center">
+            <span className="text-primary-foreground text-xs font-semibold">{initials}</span>
+          </div>
         </div>
       </header>
 

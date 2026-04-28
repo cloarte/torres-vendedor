@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Truck } from 'lucide-react';
 import FloatingActionButton from './FloatingActionButton';
 import OrderDetailSheet from './OrderDetailSheet';
 import { useApp } from '@/contexts/AppContext';
@@ -14,8 +15,7 @@ const statusConfig: Record<OrderStatus, { bg: string; text: string; label: strin
   RECHAZADO: { bg: 'bg-red-100', text: 'text-red-700', label: 'Rechazado' },
 };
 
-const filters: { label: string; value: OrderStatus | 'ALL' }[] = [
-  { label: 'Todos', value: 'ALL' },
+const filters: { label: string; value: OrderStatus }[] = [
   { label: 'Pendiente', value: 'PENDIENTE' },
   { label: 'Listo Despacho', value: 'LISTO_DESPACHO' },
   { label: 'Confirmado', value: 'CONFIRMADO' },
@@ -30,20 +30,14 @@ const summaryCards = [
 ];
 
 const PedidosTab = () => {
-  const [activeFilter, setActiveFilter] = useState<OrderStatus | 'ALL'>('ALL');
+  const [activeFilter, setActiveFilter] = useState<OrderStatus>('PENDIENTE');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [, setRefresh] = useState(0);
   const { selectedCanal, orders, vendorName } = useApp();
   const navigate = useNavigate();
 
-  const filtered = (() => {
-    if (activeFilter === 'ALL') return orders;
-    if (activeFilter === 'LISTO_DESPACHO') {
-      return orders.filter((o) => o.status === 'LISTO_DESPACHO');
-    }
-    return orders.filter((o) => o.status === activeFilter && o.creadoPor === vendorName);
-  })();
+  const filtered = orders.filter((o) => o.status === activeFilter);
 
   const handleOrderClick = (order: Order) => {
     setSelectedOrder(order);
@@ -97,10 +91,13 @@ const PedidosTab = () => {
       <div className="space-y-2">
         {filtered.map((order, i) => {
           const st = statusConfig[order.status];
+          const isSobre = order.isSobrestock;
           return (
             <div
               key={order.id}
-              className="bg-card rounded-xl p-4 shadow-sm active:scale-[0.98] transition-transform duration-100 cursor-pointer animate-fade-in-up"
+              className={`bg-card rounded-xl p-4 shadow-sm active:scale-[0.98] transition-transform duration-100 cursor-pointer animate-fade-in-up ${
+                isSobre ? 'border-l-4 border-amber-400' : ''
+              }`}
               style={{ animationDelay: `${(i + 3) * 60}ms` }}
               onClick={() => handleOrderClick(order)}
             >
@@ -120,6 +117,12 @@ const PedidosTab = () => {
                 <span className="text-[10px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded font-medium">
                   {order.canal}
                 </span>
+                {isSobre && (
+                  <span className="inline-flex items-center gap-1 text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded font-medium">
+                    <Truck className="w-3 h-3" />
+                    Sobrestock
+                  </span>
+                )}
                 <span className="text-xs text-muted-foreground">{order.fechaEntrega}</span>
                 {order.creadoPor !== vendorName && (
                   <span className="text-[10px] text-muted-foreground">· por {order.creadoPor}</span>
