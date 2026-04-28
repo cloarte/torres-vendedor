@@ -60,6 +60,7 @@ export interface Order {
   isOffline?: boolean;
   payments?: PaymentEntry[];
   deliveredProducts?: OrderProduct[];
+  isSobrestock?: boolean;
 }
 
 export const mockClients: Client[] = [
