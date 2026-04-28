@@ -24,7 +24,7 @@ const StockFlotantePill = () => {
       <PopoverTrigger asChild>
         <button className="flex items-center gap-1.5 bg-amber-500 text-white rounded-full px-3 py-1.5 text-xs font-semibold active:scale-95 transition-transform">
           <Truck className="w-4 h-4" />
-          <span>Stock: {totalUnits} uds</span>
+          <span>Stock Flotante: {totalUnits} uds</span>
         </button>
       </PopoverTrigger>
       <PopoverContent
